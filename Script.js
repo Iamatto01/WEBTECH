@@ -142,3 +142,9 @@ function openGoogleMaps() {
   const url = `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`;
   window.open(url, '_blank');
 }
+
+document.addEventListener('DOMContentLoaded', () => {
+  const btn = document.querySelector('.nav-toggle');
+  const nav = document.querySelector('nav');
+  btn.addEventListener('click', () => nav.classList.toggle('active'));
+});

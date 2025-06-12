@@ -109,9 +109,14 @@ header {
 
 .header-content {
   display: grid;
-  grid-template-columns: 1fr auto 1fr;
+  grid-template-columns: auto 1fr auto;
   align-items: center;
 }
+
+/* ensure each section aligns correctly */
+.header-left   { justify-self: start; }
+.header-center { justify-self: center; }  /* <-- fix here */
+.header-right  { justify-self: end; }
 
 .header-left, .header-center, .header-right {
   display: flex;
