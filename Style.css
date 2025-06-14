@@ -821,3 +821,40 @@ footer {
     grid-template-columns: 1fr;
   }
 }
+
+/* ===== FORM MESSAGES ===== */
+.form-message-container {
+  margin-bottom: 20px;
+  min-height: 50px;
+}
+
+.form-message {
+  padding: 12px 15px;
+  margin-bottom: 20px;
+  border-radius: 4px;
+  font-weight: 500;
+  animation: fadeIn 0.3s ease;
+  display: inline-block;
+}
+
+.form-message.success {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+  border-left: 4px solid #2e7d32;
+}
+
+.form-message.error {
+  background-color: #ffebee;
+  color: #d32f2f;
+  border-left: 4px solid #d32f2f;
+}
+
+.form-group.error input,
+.form-group.error textarea {
+  border-color: #d32f2f !important;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}

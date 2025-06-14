@@ -49,9 +49,116 @@ document.addEventListener("DOMContentLoaded", function () {
       }, 600, 'swing');
     }
   });
+
+  // Initialize contact form if it exists
+  if ($('#contactForm').length) {
+    initContactForm();
+  }
 });
 
-/* ===== HOME PAGE SCRIPT ===== */
+/* ===== CONTACT FORM FUNCTIONALITY ===== */
+function initContactForm() {
+  const $form = $('#contactForm');
+  
+  // Create message container if it doesn't exist
+  if (!$('.form-message-container').length) {
+    $form.prepend('<div class="form-message-container"></div>');
+  }
+
+  $form.off('submit').on('submit', function(e) {
+    e.preventDefault();
+
+    // Reset previous states
+    $('.form-group').removeClass('error');
+    $('.form-message').remove();
+
+    // Get and validate form values
+    const formData = {
+      name: $.trim($('#name').val()),
+      email: $.trim($('#email').val()),
+      phone: $.trim($('#phone').val()),
+      message: $.trim($('#message').val())
+    };
+
+    // Validate fields
+    let isValid = true;
+    if (!formData.name) {
+      $('#name').parent().addClass('error');
+      isValid = false;
+    }
+    if (!formData.email) {
+      $('#email').parent().addClass('error');
+      isValid = false;
+    } else if (!validateEmail(formData.email)) {
+      $('#email').parent().addClass('error');
+      showFormMessage('Please enter a valid email address.', 'error');
+      return false;
+    }
+    if (!formData.message) {
+      $('#message').parent().addClass('error');
+      isValid = false;
+    }
+
+    if (!isValid) {
+      showFormMessage('Please fill in all required fields.', 'error');
+      return false;
+    }
+
+    // Prepare for submission
+    const submitBtn = $form.find('button[type="submit"]');
+    submitBtn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Sending...');
+
+    // Submit to FormSubmit.co
+    $.ajax({
+      url: 'https://formsubmit.co/ajax/muhammadsaifudinmj@gmail.com',
+      method: 'POST',
+      data: {
+        name: formData.name,
+        email: formData.email,
+        phone: formData.phone,
+        message: formData.message,
+        _subject: 'New Contact Form Submission - Rezki Food',
+        _template: 'table',
+        _captcha: 'false',
+        _replyto: formData.email
+      },
+      dataType: 'json',
+      success: function(response) {
+        if (response.success === "true") {
+          showFormMessage('Thank you! Your message has been sent successfully.', 'success');
+          $form[0].reset();
+        } else {
+          showFormMessage('There was an error sending your message. Please try again.', 'error');
+        }
+      },
+      error: function(xhr, status, error) {
+        console.error('Form submission error:', error);
+        showFormMessage('There was an error sending your message. Please try again.', 'error');
+      },
+      complete: function() {
+        submitBtn.prop('disabled', false).text('Send Message');
+      }
+    });
+  });
+
+  function showFormMessage(message, type) {
+    $('.form-message').remove();
+    const messageDiv = $(`<div class="form-message ${type}">${message}</div>`).hide();
+    $('.form-message-container').html(messageDiv);
+    messageDiv.fadeIn();
+    
+    setTimeout(() => {
+      messageDiv.fadeOut(() => messageDiv.remove());
+    }, 5000);
+  }
+
+  function validateEmail(email) {
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return re.test(email);
+  }
+}
+
+/* ===== HOME PAGE ANIMATIONS ===== */
 document.addEventListener("DOMContentLoaded", function() {
   // Mobile nav toggle
   const navToggle = document.querySelector('.nav-toggle');
@@ -76,75 +183,32 @@ document.addEventListener("DOMContentLoaded", function() {
   });
 });
 
-/* ===== MENU PAGE SCRIPT ===== */
+/* ===== MENU PAGE FILTERING ===== */
 document.addEventListener("DOMContentLoaded", function() {
-  // Menu filtering functionality
   const categoryBtns = document.querySelectorAll('.category-btn');
   const menuItems = document.querySelectorAll('.menu-item');
   
   if (categoryBtns.length) {
     categoryBtns.forEach(btn => {
       btn.addEventListener('click', function() {
-        // Update active button
         categoryBtns.forEach(b => b.classList.remove('active'));
         this.classList.add('active');
         
-        // Filter menu items
         const category = this.dataset.category;
         menuItems.forEach(item => {
-          if (category === 'all' || item.dataset.category === category) {
-            item.style.display = 'block';
-          } else {
-            item.style.display = 'none';
-          }
+          item.style.display = (category === 'all' || item.dataset.category === category) 
+            ? 'block' 
+            : 'none';
         });
       });
     });
   }
 });
 
-/* ===== CONTACT PAGE SCRIPT ===== */
-document.addEventListener("DOMContentLoaded", function() {
-  // Form submission handling
-  const contactForm = document.getElementById('contactForm');
-  if (contactForm) {
-    contactForm.addEventListener('submit', function(e) {
-      e.preventDefault();
-      
-      // Simple validation
-      let isValid = true;
-      const inputs = this.querySelectorAll('input, textarea');
-      
-      inputs.forEach(input => {
-        if (!input.value.trim()) {
-          isValid = false;
-          input.style.borderColor = 'red';
-        } else {
-          input.style.borderColor = '#ddd';
-        }
-      });
-      
-      if (isValid) {
-        // Show success message (in a real app, would send to server)
-        alert('Thank you for your message! We will contact you soon.');
-        this.reset();
-      } else {
-        alert('Please fill in all required fields.');
-      }
-    });
-  }
-});
-
-/* ===== LOCATION PAGE SCRIPT ===== */
+/* ===== LOCATION PAGE FUNCTION ===== */
 function openGoogleMaps() {
   const lat = 3.248447;
   const lng = 101.740143;
   const url = `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`;
   window.open(url, '_blank');
 }
-
-document.addEventListener('DOMContentLoaded', () => {
-  const btn = document.querySelector('.nav-toggle');
-  const nav = document.querySelector('nav');
-  btn.addEventListener('click', () => nav.classList.toggle('active'));
-});
