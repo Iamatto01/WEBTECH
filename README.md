@@ -1,1 +1,0 @@
-Every day is a new chance to grow stronger.
